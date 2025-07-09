@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Message Encryptor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #6c7b7f;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a8b4b8;
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #6c7b7f;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e8f0fe;
+            border-radius: 12px;
+            background: #fafbfc;
+            color: #5f6368;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            resize: vertical;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #b6d7ff;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(182, 215, 255, 0.2);
+        }
+
+        textarea {
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .encrypt-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .decrypt-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e8f0fe;
+        }
+
+        .result-area {
+            background: #f8f9fa;
+            border: 2px solid #e8f0fe;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 120px;
+            font-family: 'Courier New', monospace;
+            color: #5f6368;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+
+        .result-area.has-content {
+            background: #ffffff;
+            border-color: #b6d7ff;
+        }
+
+        .key-strength {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: #9aa0a6;
+        }
+
+        .error {
+            color: #ea4335;
+            background: #fce8e6;
+            border: 1px solid #fad2cf;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                padding: 12px 20px;
+            }
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e8f0fe;
+            border: 1px solid #dadce0;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: #5f6368;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: #d2e3fc;
+        }
+
+        .result-container {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Secret Message</h1>
+        <p class="subtitle">Encrypt and decrypt your messages with a secret key</p>
+        
+        <div class="input-group">
+            <label for="message">Your Message:</label>
+            <textarea id="message" placeholder="Enter your message here..."></textarea>
+        </div>
+        
+        <div class="input-group">
+            <label for="key">Secret Key:</label>
+            <input type="text" id="key" placeholder="Enter your secret key...">
+            <div class="key-strength" id="keyStrength"></div>
+        </div>
+        
+        <div class="button-group">
+            <button class="encrypt-btn" onclick="encryptMessage()">🔒 Encrypt</button>
+            <button class="decrypt-btn" onclick="decryptMessage()">🔓 Decrypt</button>
+        </div>
+        
+        <div class="result-section">
+            <label>Result:</label>
+            <div class="result-container">
+                <div class="result-area" id="result">Your encrypted or decrypted message will appear here...</div>
+                <button class="copy-btn" onclick="copyResult()" style="display: none;">Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate a deterministic substitution cipher based on the key
+        function generateCipher(key) {
+            const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+            const shuffledAlphabet = alphabet.split('');
+            
+            // Create a deterministic shuffle based on the key
+            let hash = 0;
+            for (let i = 0; i < key.length; i++) {
+                hash = ((hash << 5) - hash + key.charCodeAt(i)) & 0xffffffff;
+            }
+            
+            // Use the hash to create a deterministic Fisher-Yates shuffle
+            for (let i = shuffledAlphabet.length - 1; i > 0; i--) {
+                hash = ((hash * 1103515245) + 12345) & 0xffffffff;
+                const j = Math.abs(hash) % (i + 1);
+                [shuffledAlphabet[i], shuffledAlphabet[j]] = [shuffledAlphabet[j], shuffledAlphabet[i]];
+            }
+            
+            const cipher = {};
+            const reverseCipher = {};
+            
+            for (let i = 0; i < alphabet.length; i++) {
+                cipher[alphabet[i]] = shuffledAlphabet[i];
+                reverseCipher[shuffledAlphabet[i]] = alphabet[i];
+            }
+            
+            return { cipher, reverseCipher };
+        }
+
+        function processMessage(message, key, isEncrypting) {
+            if (!key.trim()) {
+                throw new Error('Please enter a secret key');
+            }
+            
+            if (!message.trim()) {
+                throw new Error('Please enter a message');
+            }
+            
+            const { cipher, reverseCipher } = generateCipher(key.toLowerCase());
+            const lookupTable = isEncrypting ? cipher : reverseCipher;
+            
+            return message
+                .split('')
+                .map(char => {
+                    const lowerChar = char.toLowerCase();
+                    if (lookupTable[lowerChar]) {
+                        return char === char.toUpperCase() ? 
+                            lookupTable[lowerChar].toUpperCase() : 
+                            lookupTable[lowerChar];
+                    }
+                    return char; // Keep non-alphabetic characters unchanged
+                })
+                .join('');
+        }
+
+        function encryptMessage() {
+            try {
+                const message = document.getElementById('message').value;
+                const key = document.getElementById('key').value;
+                const encrypted = processMessage(message, key, true);
+                displayResult(encrypted);
+            } catch (error) {
+                displayError(error.message);
+            }
+        }
+
+        function decryptMessage() {
+            try {
+                const message = document.getElementById('message').value;
+                const key = document.getElementById('key').value;
+                const decrypted = processMessage(message, key, false);
+                displayResult(decrypted);
+            } catch (error) {
+                displayError(error.message);
+            }
+        }
+
+        function displayResult(result) {
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = result;
+            resultElement.classList.add('has-content');
+            document.querySelector('.copy-btn').style.display = 'block';
+            
+            // Remove any existing error messages
+            const existingError = document.querySelector('.error');
+            if (existingError) {
+                existingError.remove();
+            }
+        }
+
+        function displayError(message) {
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = 'Your encrypted or decrypted message will appear here...';
+            resultElement.classList.remove('has-content');
+            document.querySelector('.copy-btn').style.display = 'none';
+            
+            // Remove existing error
+            const existingError = document.querySelector('.error');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Add new error
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            document.querySelector('.result-section').appendChild(errorDiv);
+        }
+
+        function copyResult() {
+            const result = document.getElementById('result').textContent;
+            navigator.clipboard.writeText(result).then(() => {
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.style.background = '#d4edda';
+                copyBtn.style.color = '#155724';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.background = '#e8f0fe';
+                    copyBtn.style.color = '#5f6368';
+                }, 2000);
+            });
+        }
+
+        // Update key strength indicator
+        document.getElementById('key').addEventListener('input', function() {
+            const key = this.value;
+            const strengthElement = document.getElementById('keyStrength');
+            
+            if (key.length === 0) {
+                strengthElement.textContent = '';
+            } else if (key.length < 4) {
+                strengthElement.textContent = 'Key strength: Weak';
+                strengthElement.style.color = '#ea4335';
+            } else if (key.length < 8) {
+                strengthElement.textContent = 'Key strength: Medium';
+                strengthElement.style.color = '#fbbc04';
+            } else {
+                strengthElement.textContent = 'Key strength: Strong';
+                strengthElement.style.color = '#34a853';
+            }
+        });
+
+        // Allow Enter key to encrypt by default
+        document.getElementById('message').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                encryptMessage();
+            }
+        });
+
+        document.getElementById('key').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                encryptMessage();
+            }
+        });
+    </script>
+</body>
+</html>
