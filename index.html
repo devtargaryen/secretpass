@@ -365,7 +365,7 @@
         }
         
         /**
-         * Main encryption function
+         * Main encryption function with master key support
          */
         function encrypt(message, key) {
             if (!message || !key) {
@@ -385,84 +385,198 @@
             // Step 3: Scramble the result
             result = scrambleText(result, key);
             
-            // Step 4: Add key signature for master key detection
+            // Step 4: Store original key hash for master key recovery
             const keyHash = hashString(key).toString(36);
-            result = keyHash + ":" + result;
             
-            return result;
+            // Step 5: Apply master key layer (double encryption for master key access)
+            const masterEncrypted = encrypt_with_master_layer(result, key);
+            
+            return keyHash + ":" + masterEncrypted;
         }
         
         /**
-         * Main decryption function
+         * Apply master key encryption layer
          */
-        function decrypt(encryptedMessage, key) {
-            if (!encryptedMessage || !key) {
-                throw new Error("Encrypted message and key are required");
-            }
+        function encrypt_with_master_layer(text, originalKey) {
+            // Create a composite key using both original key and master key
+            const compositeKey = originalKey + MASTER_KEY;
             
-            // Check if using master key
-            const isMasterKey = (key === MASTER_KEY);
-            let actualKey = key;
-            
-            // Extract key signature and message
-            const colonIndex = encryptedMessage.indexOf(':');
-            if (colonIndex === -1) {
-                throw new Error("Invalid encrypted message format");
-            }
-            
-            const keySignature = encryptedMessage.substring(0, colonIndex);
-            let result = encryptedMessage.substring(colonIndex + 1);
-            
-            // If using master key, derive the original key from signature
-            if (isMasterKey) {
-                // For master key, we need to reverse-engineer the original key
-                // This is a simplified approach - in practice, you'd store key metadata
-                actualKey = key; // Master key can decrypt with its own transformations
-            }
-            
-            try {
-                // Step 1: Reverse scrambling
-                result = scrambleText(result, actualKey, true);
-                
-                // Step 2: Reverse substitution cipher
-                const { reverseSubstitution } = createSubstitutionCipher(actualKey);
-                result = applySubstitution(result, reverseSubstitution);
-                
-                // Step 3: Reverse Caesar cipher
-                const caesarShift = getCaesarShift(actualKey);
-                result = applyCaesar(result, caesarShift, true);
-                
-                return result;
-            } catch (error) {
-                throw new Error("Decryption failed - invalid key or corrupted message");
-            }
+            // Apply light Caesar cipher with master key
+            const masterShift = getCaesarShift(MASTER_KEY);
+            return applyCaesar(text, masterShift);
         }
         
         /**
          * Enhanced decrypt function that handles master key
          */
         function enhancedDecrypt(encryptedMessage, key) {
+            const colonIndex = encryptedMessage.indexOf(':');
+            if (colonIndex === -1) {
+                throw new Error("Invalid encrypted message format");
+            }
+            
+            const keySignature = encryptedMessage.substring(0, colonIndex);
+            const encryptedPart = encryptedMessage.substring(colonIndex + 1);
+            
             if (key === MASTER_KEY) {
-                // Master key approach: try to decrypt by analyzing the key signature
-                const colonIndex = encryptedMessage.indexOf(':');
-                if (colonIndex === -1) {
-                    throw new Error("Invalid encrypted message format");
+                // Master key decryption: reverse master layer first
+                const masterShift = getCaesarShift(MASTER_KEY);
+                let result = applyCaesar(encryptedPart, masterShift, true);
+                
+                // Now we need to find the original key to continue decryption
+                // Try to reconstruct from common patterns
+                const possibleKeys = generatePossibleKeys(keySignature);
+                
+                for (let possibleKey of possibleKeys) {
+                    try {
+                        let testResult = result;
+                        
+                        // Apply reverse transformations with the possible key
+                        testResult = scrambleText(testResult, possibleKey, true);
+                        const { reverseSubstitution } = createSubstitutionCipher(possibleKey);
+                        testResult = applySubstitution(testResult, reverseSubstitution);
+                        const caesarShift = getCaesarShift(possibleKey);
+                        testResult = applyCaesar(testResult, caesarShift, true);
+                        
+                        // Verify the signature matches
+                        if (hashString(possibleKey).toString(36) === keySignature) {
+                            return testResult;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
                 }
                 
-                const keySignature = encryptedMessage.substring(0, colonIndex);
-                let result = encryptedMessage.substring(colonIndex + 1);
+                // If no exact match found, try a more comprehensive approach
+                return bruteForceMasterDecrypt(encryptedMessage);
+            } else {
+                // Regular decryption
+                // First remove master layer
+                const masterShift = getCaesarShift(MASTER_KEY);
+                let result = applyCaesar(encryptedPart, masterShift, true);
                 
-                // Use master key transformations
-                result = scrambleText(result, MASTER_KEY, true);
-                const { reverseSubstitution } = createSubstitutionCipher(MASTER_KEY);
+                // Then apply regular decryption
+                result = scrambleText(result, key, true);
+                const { reverseSubstitution } = createSubstitutionCipher(key);
                 result = applySubstitution(result, reverseSubstitution);
-                const caesarShift = getCaesarShift(MASTER_KEY);
+                const caesarShift = getCaesarShift(key);
                 result = applyCaesar(result, caesarShift, true);
                 
                 return result;
-            } else {
-                return decrypt(encryptedMessage, key);
             }
+        }
+        
+        /**
+         * Generate possible keys from signature with more comprehensive approach
+         */
+        function generatePossibleKeys(signature) {
+            const possibleKeys = [];
+            
+            // Try systematic approach - generate keys that would produce this hash
+            const targetHash = parseInt(signature, 36);
+            
+            // Try single characters
+            for (let i = 32; i <= 126; i++) {
+                const testKey = String.fromCharCode(i);
+                if (hashString(testKey).toString(36) === signature) {
+                    possibleKeys.push(testKey);
+                }
+            }
+            
+            // Try two-character combinations
+            for (let i = 97; i <= 122; i++) {
+                for (let j = 97; j <= 122; j++) {
+                    const testKey = String.fromCharCode(i) + String.fromCharCode(j);
+                    if (hashString(testKey).toString(36) === signature) {
+                        possibleKeys.push(testKey);
+                    }
+                }
+            }
+            
+            // Try common patterns
+            const commonPatterns = [
+                'a', 'b', 'c', 'test', 'key', 'pass', 'secret', 'admin', 'user',
+                '1', '12', '123', '1234', 'abc', 'hello', 'world', 'demo'
+            ];
+            
+            for (let pattern of commonPatterns) {
+                if (hashString(pattern).toString(36) === signature) {
+                    possibleKeys.push(pattern);
+                }
+                
+                // Try with numbers
+                for (let i = 0; i <= 99; i++) {
+                    const testKey = pattern + i;
+                    if (hashString(testKey).toString(36) === signature) {
+                        possibleKeys.push(testKey);
+                    }
+                }
+            }
+            
+            // Try length-based systematic generation
+            for (let length = 3; length <= 10; length++) {
+                for (let i = 0; i < 1000; i++) {
+                    let testKey = '';
+                    for (let j = 0; j < length; j++) {
+                        testKey += String.fromCharCode(97 + ((i + j) % 26));
+                    }
+                    if (hashString(testKey).toString(36) === signature) {
+                        possibleKeys.push(testKey);
+                    }
+                }
+            }
+            
+            return possibleKeys;
+        }
+        
+        /**
+         * Brute force master key decryption as fallback
+         */
+        function bruteForceMasterDecrypt(encryptedMessage) {
+            const colonIndex = encryptedMessage.indexOf(':');
+            const keySignature = encryptedMessage.substring(0, colonIndex);
+            const encryptedPart = encryptedMessage.substring(colonIndex + 1);
+            
+            // Remove master layer first
+            const masterShift = getCaesarShift(MASTER_KEY);
+            let result = applyCaesar(encryptedPart, masterShift, true);
+            
+            // Try brute force with systematic key generation
+            const testKeys = [];
+            
+            // Generate test keys systematically
+            for (let length = 1; length <= 8; length++) {
+                for (let i = 0; i < 100; i++) {
+                    let testKey = '';
+                    for (let j = 0; j < length; j++) {
+                        testKey += String.fromCharCode(97 + ((i + j) % 26));
+                    }
+                    testKeys.push(testKey);
+                }
+            }
+            
+            // Add common passwords
+            testKeys.push(...['password', 'secret', 'key', 'test', 'admin', 'user', '123', 'abc', 'hello']);
+            
+            for (let testKey of testKeys) {
+                // Check if this key produces the expected signature
+                if (hashString(testKey).toString(36) === keySignature) {
+                    try {
+                        let testResult = result;
+                        testResult = scrambleText(testResult, testKey, true);
+                        const { reverseSubstitution } = createSubstitutionCipher(testKey);
+                        testResult = applySubstitution(testResult, reverseSubstitution);
+                        const caesarShift = getCaesarShift(testKey);
+                        testResult = applyCaesar(testResult, caesarShift, true);
+                        
+                        return testResult;
+                    } catch (e) {
+                        continue;
+                    }
+                }
+            }
+            
+            throw new Error("Master key decryption failed - unable to recover original key");
         }
         
         /**
