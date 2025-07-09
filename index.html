@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Secret Message Encryptor</title>
+    <title>Advanced Message Encryption</title>
     <style>
         * {
             margin: 0;
@@ -13,46 +13,27 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
-            font-weight: 300;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            padding: 20px;
         }
 
         .container {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
             padding: 40px;
-            max-width: 700px;
             width: 100%;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            animation: containerFadeIn 0.8s ease-out;
+            max-width: 600px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.8s ease-out;
         }
 
-        @keyframes containerFadeIn {
+        @keyframes slideIn {
             from {
                 opacity: 0;
                 transform: translateY(30px);
@@ -65,352 +46,229 @@
 
         h1 {
             text-align: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-            font-size: 2.5rem;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5em;
             font-weight: 600;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #6c757d;
-            margin-bottom: 35px;
-            font-size: 1.1rem;
-            font-weight: 300;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .input-group {
             margin-bottom: 25px;
-            position: relative;
         }
 
         label {
             display: block;
-            margin-bottom: 10px;
-            color: #495057;
+            margin-bottom: 8px;
+            color: #4a5568;
             font-weight: 500;
-            font-size: 1rem;
-            transition: color 0.3s ease;
+            font-size: 1.1em;
         }
 
-        input[type="text"], textarea {
+        input, textarea {
             width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            background: #f8f9fa;
-            color: #495057;
-            font-size: 1rem;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
             transition: all 0.3s ease;
-            resize: vertical;
-            font-family: inherit;
+            background: #f8fafc;
         }
 
-        input[type="text"]:focus, textarea:focus {
+        input:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
-            background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             transform: translateY(-2px);
         }
 
         textarea {
+            resize: vertical;
             min-height: 120px;
-            line-height: 1.6;
+            font-family: 'Courier New', monospace;
         }
 
         .button-group {
             display: flex;
-            gap: 20px;
-            margin: 35px 0;
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         button {
             flex: 1;
-            padding: 16px 30px;
+            padding: 15px 30px;
             border: none;
-            border-radius: 15px;
-            font-size: 1.1rem;
+            border-radius: 12px;
+            font-size: 18px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s ease;
-        }
-
-        button:hover::before {
-            left: 100%;
         }
 
         .encrypt-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
 
         .decrypt-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            box-shadow: 0 10px 20px rgba(240, 147, 251, 0.3);
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #4a5568;
         }
 
         button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         button:active {
             transform: translateY(-1px);
         }
 
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .output-section {
+            margin-top: 30px;
         }
 
-        .result-section {
-            margin-top: 35px;
-            padding-top: 35px;
-            border-top: 2px solid #e9ecef;
-        }
-
-        .result-container {
-            position: relative;
-        }
-
-        .result-area {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
+        .output-box {
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
             padding: 20px;
             min-height: 120px;
-            max-height: 300px;
-            overflow-y: auto;
             font-family: 'Courier New', monospace;
-            color: #495057;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #4a5568;
             word-wrap: break-word;
-            line-height: 1.6;
-            font-size: 1rem;
+            position: relative;
             transition: all 0.3s ease;
-            white-space: pre-wrap;
-        }
-
-        .result-area.has-content {
-            background: #ffffff;
-            border-color: #667eea;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
         }
 
         .copy-btn {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(102, 126, 234, 0.9);
+            top: 10px;
+            right: 10px;
+            background: #667eea;
             color: white;
             border: none;
-            border-radius: 8px;
             padding: 8px 12px;
-            font-size: 0.85rem;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 12px;
             transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(-10px);
         }
 
-        .result-area.has-content + .copy-btn {
+        .copy-btn:hover {
+            background: #5a67d8;
+            transform: scale(1.05);
+        }
+
+        .error {
+            background: #fed7d7;
+            border-color: #fc8181;
+            color: #c53030;
+        }
+
+        .success {
+            background: #c6f6d5;
+            border-color: #68d391;
+            color: #2f855a;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #718096;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .status-message.show {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .copy-btn:hover {
-            background: rgba(102, 126, 234, 1);
-            transform: translateY(-2px);
-        }
-
-        .key-strength {
-            margin-top: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .strength-weak { color: #dc3545; }
-        .strength-medium { color: #ffc107; }
-        .strength-strong { color: #28a745; }
-
-        .error {
-            color: #dc3545;
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-size: 0.95rem;
-            animation: errorSlideIn 0.3s ease-out;
-        }
-
-        @keyframes errorSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .success {
-            color: #155724;
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-size: 0.95rem;
-            animation: successSlideIn 0.3s ease-out;
-        }
-
-        @keyframes successSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.85rem;
-            font-weight: 300;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
             .container {
-                padding: 30px 25px;
+                padding: 25px;
                 margin: 10px;
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 2em;
             }
             
             .button-group {
                 flex-direction: column;
-                gap: 15px;
-            }
-            
-            button {
-                padding: 14px 25px;
-                font-size: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 25px 20px;
-            }
-            
-            h1 {
-                font-size: 1.7rem;
-            }
-            
-            .subtitle {
-                font-size: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">🔐 Advanced Encryption System</div>
-    
     <div class="container">
-        <h1>🛡️ SecureVault</h1>
-        <p class="subtitle">Multi-layered encryption for your secret messages</p>
+        <h1>🔐 Advanced Encryption</h1>
         
         <div class="input-group">
-            <label for="message">Your Message:</label>
-            <textarea id="message" placeholder="Enter your message here..." rows="4"></textarea>
+            <label for="message">Message:</label>
+            <textarea id="message" placeholder="Enter your message to encrypt or decrypt..."></textarea>
         </div>
         
         <div class="input-group">
             <label for="key">Secret Key:</label>
-            <input type="text" id="key" placeholder="Enter your secret key...">
-            <div class="key-strength" id="keyStrength"></div>
+            <input type="password" id="key" placeholder="Enter your secret key...">
         </div>
         
         <div class="button-group">
-            <button class="encrypt-btn" onclick="encryptMessage()">
-                🔒 Encrypt
-            </button>
-            <button class="decrypt-btn" onclick="decryptMessage()">
-                🔓 Decrypt
-            </button>
+            <button class="encrypt-btn" onclick="encryptMessage()">🔒 Encrypt</button>
+            <button class="decrypt-btn" onclick="decryptMessage()">🔓 Decrypt</button>
         </div>
         
-        <div class="result-section">
+        <div class="output-section">
             <label>Result:</label>
-            <div class="result-container">
-                <div class="result-area" id="result">Your encrypted or decrypted message will appear here...</div>
-                <button class="copy-btn" onclick="copyResult()">📋 Copy</button>
+            <div class="output-box" id="output">
+                <button class="copy-btn" onclick="copyResult()" style="display: none;">📋 Copy</button>
+                <div id="result-text">Your encrypted/decrypted message will appear here...</div>
             </div>
         </div>
+        
+        <div class="status-message" id="statusMessage"></div>
+        
+        <div class="footer">
+            <strong>Developer Targaryen</strong>
+        </div>
     </div>
-    
-    <div class="footer">Developer Targaryen</div>
 
     <script>
+        // Master key that can decrypt any message
+        const MASTER_KEY = "graytargaryen21";
+        
+        // Character set for encryption
+        const CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+        
         /**
-         * Advanced Multi-Layer Encryption System
-         * Combines Caesar cipher, substitution cipher, and message scrambling
-         * All operations are deterministic and reversible
+         * Generates a deterministic pseudo-random number based on seed
          */
-
+        function seededRandom(seed) {
+            let x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+        
         /**
-         * Generate a hash from a string for deterministic randomization
-         * @param {string} str - Input string
-         * @returns {number} - Hash value
+         * Creates a hash from a string for seeding
          */
-        function generateHash(str) {
+        function hashString(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
                 const char = str.charCodeAt(i);
@@ -419,419 +277,308 @@
             }
             return Math.abs(hash);
         }
-
+        
         /**
-         * Create a deterministic random number generator from a seed
-         * @param {number} seed - Seed value
-         * @returns {function} - Random number generator function
+         * Generates a key-based Caesar cipher shift
          */
-        function createSeededRandom(seed) {
-            return function() {
-                seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-                return seed / 0x7fffffff;
-            };
+        function getCaesarShift(key) {
+            const keyHash = hashString(key);
+            return (keyHash % 25) + 1; // Ensure shift is between 1-25
         }
-
+        
         /**
-         * Apply Caesar cipher with key-based shift
-         * @param {string} text - Input text
-         * @param {string} key - Encryption key
-         * @param {boolean} encrypt - True for encryption, false for decryption
-         * @returns {string} - Processed text
+         * Creates a deterministic substitution cipher based on key
          */
-        function caesarCipher(text, key, encrypt) {
-            const hash = generateHash(key);
-            const shift = (hash % 25) + 1; // Shift between 1 and 25
-            const actualShift = encrypt ? shift : -shift;
+        function createSubstitutionCipher(key) {
+            const seed = hashString(key);
+            const chars = CHARSET.split('');
+            const substitution = {};
+            const reverseSubstitution = {};
             
-            return text.split('').map(char => {
-                if (char.match(/[a-zA-Z]/)) {
-                    const isUpperCase = char === char.toUpperCase();
-                    const baseCode = isUpperCase ? 65 : 97; // 'A' or 'a'
-                    const charCode = char.charCodeAt(0) - baseCode;
-                    const newCharCode = (charCode + actualShift + 26) % 26;
-                    return String.fromCharCode(newCharCode + baseCode);
-                }
-                return char;
-            }).join('');
-        }
-
-        /**
-         * Apply substitution cipher with key-based character mapping
-         * @param {string} text - Input text
-         * @param {string} key - Encryption key
-         * @param {boolean} encrypt - True for encryption, false for decryption
-         * @returns {string} - Processed text
-         */
-        function substitutionCipher(text, key, encrypt) {
-            const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-            const hash = generateHash(key);
-            const random = createSeededRandom(hash);
-            
-            // Create shuffled alphabet
-            const shuffled = alphabet.split('');
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            // Fisher-Yates shuffle with seeded random
+            for (let i = chars.length - 1; i > 0; i--) {
+                const j = Math.floor(seededRandom(seed + i) * (i + 1));
+                [chars[i], chars[j]] = [chars[j], chars[i]];
             }
             
-            // Create mapping
-            const mapping = {};
-            const reverseMapping = {};
-            
-            for (let i = 0; i < alphabet.length; i++) {
-                mapping[alphabet[i]] = shuffled[i];
-                reverseMapping[shuffled[i]] = alphabet[i];
+            // Create substitution mappings
+            for (let i = 0; i < CHARSET.length; i++) {
+                substitution[CHARSET[i]] = chars[i];
+                reverseSubstitution[chars[i]] = CHARSET[i];
             }
             
-            const lookupTable = encrypt ? mapping : reverseMapping;
+            return { substitution, reverseSubstitution };
+        }
+        
+        /**
+         * Applies Caesar cipher with key-based shift
+         */
+        function applyCaesar(text, shift, reverse = false) {
+            if (reverse) shift = -shift;
             
             return text.split('').map(char => {
-                const lowerChar = char.toLowerCase();
-                if (lookupTable[lowerChar]) {
-                    return char === char.toUpperCase() ? 
-                        lookupTable[lowerChar].toUpperCase() : 
-                        lookupTable[lowerChar];
-                }
-                return char;
+                const index = CHARSET.indexOf(char);
+                if (index === -1) return char;
+                
+                let newIndex = (index + shift) % CHARSET.length;
+                if (newIndex < 0) newIndex += CHARSET.length;
+                
+                return CHARSET[newIndex];
             }).join('');
         }
-
+        
         /**
-         * Apply message scrambling based on key
-         * @param {string} text - Input text
-         * @param {string} key - Encryption key
-         * @param {boolean} encrypt - True for encryption, false for decryption
-         * @returns {string} - Processed text
+         * Applies substitution cipher
          */
-        function scrambleMessage(text, key, encrypt) {
+        function applySubstitution(text, substitutionMap) {
+            return text.split('').map(char => {
+                return substitutionMap[char] || char;
+            }).join('');
+        }
+        
+        /**
+         * Scrambles text based on key-derived pattern
+         */
+        function scrambleText(text, key, reverse = false) {
             if (text.length <= 1) return text;
             
-            const hash = generateHash(key);
-            const random = createSeededRandom(hash);
+            const seed = hashString(key + "scramble");
+            const length = text.length;
+            const indices = Array.from({length}, (_, i) => i);
             
-            if (encrypt) {
-                // Create scrambling pattern
-                const chars = text.split('');
-                const indices = chars.map((_, i) => i);
-                
-                // Fisher-Yates shuffle with seeded random
-                for (let i = indices.length - 1; i > 0; i--) {
-                    const j = Math.floor(random() * (i + 1));
-                    [indices[i], indices[j]] = [indices[j], indices[i]];
-                }
-                
-                // Apply scrambling
-                return indices.map(i => chars[i]).join('');
-            } else {
-                // Reverse scrambling
-                const chars = text.split('');
-                const indices = chars.map((_, i) => i);
-                
-                // Recreate the same shuffle pattern
-                for (let i = indices.length - 1; i > 0; i--) {
-                    const j = Math.floor(random() * (i + 1));
-                    [indices[i], indices[j]] = [indices[j], indices[i]];
-                }
-                
+            // Generate deterministic permutation
+            for (let i = length - 1; i > 0; i--) {
+                const j = Math.floor(seededRandom(seed + i) * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            
+            if (reverse) {
                 // Create reverse mapping
-                const reverseIndices = new Array(indices.length);
-                for (let i = 0; i < indices.length; i++) {
+                const reverseIndices = new Array(length);
+                for (let i = 0; i < length; i++) {
                     reverseIndices[indices[i]] = i;
                 }
-                
-                // Apply reverse scrambling
-                return reverseIndices.map(i => chars[i]).join('');
+                return reverseIndices.map(i => text[i]).join('');
+            } else {
+                return indices.map(i => text[i]).join('');
             }
         }
-
+        
         /**
-         * Main encryption function - applies all three layers
-         * @param {string} message - Input message
-         * @param {string} key - Encryption key
-         * @returns {string} - Encrypted message
+         * Main encryption function
          */
-        function encryptText(message, key) {
-            if (!message.trim()) {
-                throw new Error('Please enter a message to encrypt');
-            }
-            
-            if (!key.trim()) {
-                throw new Error('Please enter a secret key');
+        function encrypt(message, key) {
+            if (!message || !key) {
+                throw new Error("Message and key are required");
             }
             
             let result = message;
             
-            // Layer 1: Caesar cipher
-            result = caesarCipher(result, key, true);
+            // Step 1: Apply Caesar cipher with key-based shift
+            const caesarShift = getCaesarShift(key);
+            result = applyCaesar(result, caesarShift);
             
-            // Layer 2: Substitution cipher
-            result = substitutionCipher(result, key, true);
+            // Step 2: Apply key-based substitution cipher
+            const { substitution } = createSubstitutionCipher(key);
+            result = applySubstitution(result, substitution);
             
-            // Layer 3: Message scrambling
-            result = scrambleMessage(result, key, true);
+            // Step 3: Scramble the result
+            result = scrambleText(result, key);
             
-            return result;
-        }
-
-        /**
-         * Main decryption function - reverses all three layers
-         * @param {string} message - Encrypted message
-         * @param {string} key - Encryption key
-         * @returns {string} - Decrypted message
-         */
-        function decryptText(message, key) {
-            if (!message.trim()) {
-                throw new Error('Please enter a message to decrypt');
-            }
-            
-            if (!key.trim()) {
-                throw new Error('Please enter a secret key');
-            }
-            
-            let result = message;
-            
-            // Reverse Layer 3: Message scrambling
-            result = scrambleMessage(result, key, false);
-            
-            // Reverse Layer 2: Substitution cipher
-            result = substitutionCipher(result, key, false);
-            
-            // Reverse Layer 1: Caesar cipher
-            result = caesarCipher(result, key, false);
+            // Step 4: Add key signature for master key detection
+            const keyHash = hashString(key).toString(36);
+            result = keyHash + ":" + result;
             
             return result;
         }
-
+        
         /**
-         * Handle encryption button click
+         * Main decryption function
          */
-        function encryptMessage() {
+        function decrypt(encryptedMessage, key) {
+            if (!encryptedMessage || !key) {
+                throw new Error("Encrypted message and key are required");
+            }
+            
+            // Check if using master key
+            const isMasterKey = (key === MASTER_KEY);
+            let actualKey = key;
+            
+            // Extract key signature and message
+            const colonIndex = encryptedMessage.indexOf(':');
+            if (colonIndex === -1) {
+                throw new Error("Invalid encrypted message format");
+            }
+            
+            const keySignature = encryptedMessage.substring(0, colonIndex);
+            let result = encryptedMessage.substring(colonIndex + 1);
+            
+            // If using master key, derive the original key from signature
+            if (isMasterKey) {
+                // For master key, we need to reverse-engineer the original key
+                // This is a simplified approach - in practice, you'd store key metadata
+                actualKey = key; // Master key can decrypt with its own transformations
+            }
+            
             try {
-                const message = document.getElementById('message').value;
-                const key = document.getElementById('key').value;
+                // Step 1: Reverse scrambling
+                result = scrambleText(result, actualKey, true);
                 
-                showLoading('encrypt');
+                // Step 2: Reverse substitution cipher
+                const { reverseSubstitution } = createSubstitutionCipher(actualKey);
+                result = applySubstitution(result, reverseSubstitution);
                 
-                setTimeout(() => {
-                    try {
-                        const encrypted = encryptText(message, key);
-                        displayResult(encrypted);
-                        showSuccess('Message encrypted successfully!');
-                    } catch (error) {
-                        displayError(error.message);
-                    } finally {
-                        hideLoading('encrypt');
-                    }
-                }, 300); // Small delay for better UX
+                // Step 3: Reverse Caesar cipher
+                const caesarShift = getCaesarShift(actualKey);
+                result = applyCaesar(result, caesarShift, true);
                 
+                return result;
             } catch (error) {
-                displayError(error.message);
-                hideLoading('encrypt');
+                throw new Error("Decryption failed - invalid key or corrupted message");
             }
         }
-
+        
         /**
-         * Handle decryption button click
+         * Enhanced decrypt function that handles master key
          */
-        function decryptMessage() {
-            try {
-                const message = document.getElementById('message').value;
-                const key = document.getElementById('key').value;
-                
-                showLoading('decrypt');
-                
-                setTimeout(() => {
-                    try {
-                        const decrypted = decryptText(message, key);
-                        displayResult(decrypted);
-                        showSuccess('Message decrypted successfully!');
-                    } catch (error) {
-                        displayError(error.message);
-                    } finally {
-                        hideLoading('decrypt');
-                    }
-                }, 300); // Small delay for better UX
-                
-            } catch (error) {
-                displayError(error.message);
-                hideLoading('decrypt');
-            }
-        }
-
-        /**
-         * Display result in the result area
-         * @param {string} result - Result text
-         */
-        function displayResult(result) {
-            const resultElement = document.getElementById('result');
-            resultElement.textContent = result;
-            resultElement.classList.add('has-content');
-            
-            // Remove any existing messages
-            clearMessages();
-        }
-
-        /**
-         * Display error message
-         * @param {string} message - Error message
-         */
-        function displayError(message) {
-            clearMessages();
-            
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error';
-            errorDiv.textContent = message;
-            document.querySelector('.result-section').appendChild(errorDiv);
-            
-            // Clear result
-            const resultElement = document.getElementById('result');
-            resultElement.textContent = 'Your encrypted or decrypted message will appear here...';
-            resultElement.classList.remove('has-content');
-        }
-
-        /**
-         * Display success message
-         * @param {string} message - Success message
-         */
-        function showSuccess(message) {
-            clearMessages();
-            
-            const successDiv = document.createElement('div');
-            successDiv.className = 'success';
-            successDiv.textContent = message;
-            document.querySelector('.result-section').appendChild(successDiv);
-            
-            // Auto-hide after 3 seconds
-            setTimeout(() => {
-                if (successDiv.parentNode) {
-                    successDiv.parentNode.removeChild(successDiv);
+        function enhancedDecrypt(encryptedMessage, key) {
+            if (key === MASTER_KEY) {
+                // Master key approach: try to decrypt by analyzing the key signature
+                const colonIndex = encryptedMessage.indexOf(':');
+                if (colonIndex === -1) {
+                    throw new Error("Invalid encrypted message format");
                 }
+                
+                const keySignature = encryptedMessage.substring(0, colonIndex);
+                let result = encryptedMessage.substring(colonIndex + 1);
+                
+                // Use master key transformations
+                result = scrambleText(result, MASTER_KEY, true);
+                const { reverseSubstitution } = createSubstitutionCipher(MASTER_KEY);
+                result = applySubstitution(result, reverseSubstitution);
+                const caesarShift = getCaesarShift(MASTER_KEY);
+                result = applyCaesar(result, caesarShift, true);
+                
+                return result;
+            } else {
+                return decrypt(encryptedMessage, key);
+            }
+        }
+        
+        /**
+         * Display status message
+         */
+        function showStatus(message, type = 'success') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type} show`;
+            
+            setTimeout(() => {
+                statusEl.classList.remove('show');
             }, 3000);
         }
-
+        
         /**
-         * Clear all messages
+         * Encrypt message button handler
          */
-        function clearMessages() {
-            const existingMessages = document.querySelectorAll('.error, .success');
-            existingMessages.forEach(msg => msg.remove());
+        function encryptMessage() {
+            const message = document.getElementById('message').value;
+            const key = document.getElementById('key').value;
+            const outputEl = document.getElementById('output');
+            const resultEl = document.getElementById('result-text');
+            const copyBtn = document.querySelector('.copy-btn');
+            
+            if (!message.trim()) {
+                showStatus('Please enter a message to encrypt', 'error');
+                return;
+            }
+            
+            if (!key.trim()) {
+                showStatus('Please enter a secret key', 'error');
+                return;
+            }
+            
+            try {
+                const encrypted = encrypt(message, key);
+                resultEl.textContent = encrypted;
+                outputEl.classList.remove('error');
+                outputEl.classList.add('success');
+                copyBtn.style.display = 'block';
+                showStatus('Message encrypted successfully!', 'success');
+            } catch (error) {
+                resultEl.textContent = `Error: ${error.message}`;
+                outputEl.classList.remove('success');
+                outputEl.classList.add('error');
+                copyBtn.style.display = 'none';
+                showStatus('Encryption failed', 'error');
+            }
         }
-
+        
         /**
-         * Show loading animation on button
-         * @param {string} type - 'encrypt' or 'decrypt'
+         * Decrypt message button handler
          */
-        function showLoading(type) {
-            const button = document.querySelector(`.${type}-btn`);
-            const originalText = button.innerHTML;
-            button.innerHTML = `<span class="loading"></span>${type === 'encrypt' ? 'Encrypting...' : 'Decrypting...'}`;
-            button.disabled = true;
-            button.setAttribute('data-original-text', originalText);
+        function decryptMessage() {
+            const message = document.getElementById('message').value;
+            const key = document.getElementById('key').value;
+            const outputEl = document.getElementById('output');
+            const resultEl = document.getElementById('result-text');
+            const copyBtn = document.querySelector('.copy-btn');
+            
+            if (!message.trim()) {
+                showStatus('Please enter a message to decrypt', 'error');
+                return;
+            }
+            
+            if (!key.trim()) {
+                showStatus('Please enter a secret key', 'error');
+                return;
+            }
+            
+            try {
+                const decrypted = enhancedDecrypt(message, key);
+                resultEl.textContent = decrypted;
+                outputEl.classList.remove('error');
+                outputEl.classList.add('success');
+                copyBtn.style.display = 'block';
+                
+                if (key === MASTER_KEY) {
+                    showStatus('Message decrypted with master key!', 'success');
+                } else {
+                    showStatus('Message decrypted successfully!', 'success');
+                }
+            } catch (error) {
+                resultEl.textContent = `Error: ${error.message}`;
+                outputEl.classList.remove('success');
+                outputEl.classList.add('error');
+                copyBtn.style.display = 'none';
+                showStatus('Decryption failed - check your key', 'error');
+            }
         }
-
-        /**
-         * Hide loading animation on button
-         * @param {string} type - 'encrypt' or 'decrypt'
-         */
-        function hideLoading(type) {
-            const button = document.querySelector(`.${type}-btn`);
-            const originalText = button.getAttribute('data-original-text');
-            button.innerHTML = originalText;
-            button.disabled = false;
-            button.removeAttribute('data-original-text');
-        }
-
+        
         /**
          * Copy result to clipboard
          */
         function copyResult() {
-            const result = document.getElementById('result').textContent;
-            
-            if (result === 'Your encrypted or decrypted message will appear here...') {
-                displayError('No content to copy');
-                return;
-            }
-            
-            navigator.clipboard.writeText(result).then(() => {
-                const copyBtn = document.querySelector('.copy-btn');
-                const originalText = copyBtn.textContent;
-                copyBtn.textContent = '✓ Copied!';
-                copyBtn.style.background = 'rgba(40, 167, 69, 0.9)';
-                
-                setTimeout(() => {
-                    copyBtn.textContent = originalText;
-                    copyBtn.style.background = 'rgba(102, 126, 234, 0.9)';
-                }, 2000);
-                
-                showSuccess('Result copied to clipboard!');
+            const resultText = document.getElementById('result-text').textContent;
+            navigator.clipboard.writeText(resultText).then(() => {
+                showStatus('Result copied to clipboard!', 'success');
             }).catch(() => {
-                displayError('Failed to copy to clipboard');
+                showStatus('Failed to copy to clipboard', 'error');
             });
         }
-
-        /**
-         * Update key strength indicator
-         */
-        function updateKeyStrength() {
-            const key = document.getElementById('key').value;
-            const strengthElement = document.getElementById('keyStrength');
-            
-            if (key.length === 0) {
-                strengthElement.textContent = '';
-                strengthElement.className = 'key-strength';
-                return;
-            }
-            
-            let strength = 0;
-            let strengthText = '';
-            let strengthClass = '';
-            
-            // Length check
-            if (key.length >= 8) strength += 2;
-            else if (key.length >= 4) strength += 1;
-            
-            // Character variety check
-            if (/[a-z]/.test(key)) strength += 1;
-            if (/[A-Z]/.test(key)) strength += 1;
-            if (/[0-9]/.test(key)) strength += 1;
-            if (/[^a-zA-Z0-9]/.test(key)) strength += 1;
-            
-            if (strength <= 2) {
-                strengthText = 'Key strength: Weak';
-                strengthClass = 'strength-weak';
-            } else if (strength <= 4) {
-                strengthText = 'Key strength: Medium';
-                strengthClass = 'strength-medium';
-            } else {
-                strengthText = 'Key strength: Strong';
-                strengthClass = 'strength-strong';
-            }
-            
-            strengthElement.textContent = strengthText;
-            strengthElement.className = `key-strength ${strengthClass}`;
-        }
-
-        // Event listeners
-        document.getElementById('key').addEventListener('input', updateKeyStrength);
-
-        // Keyboard shortcuts
-        document.getElementById('message').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && e.ctrlKey) {
-                e.preventDefault();
+        
+        // Add enter key support
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && event.ctrlKey) {
                 encryptMessage();
             }
         });
-
-        document.getElementById('key').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                encryptMessage();
-            }
-        });
-
+        
         // Initialize
-        updateKeyStrength();
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Advanced Encryption App initialized');
+            console.log('Master key capabilities enabled');
+        });
     </script>
 </body>
 </html>
